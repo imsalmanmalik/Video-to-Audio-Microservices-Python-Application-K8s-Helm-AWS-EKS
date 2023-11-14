@@ -1,4 +1,4 @@
-# Video to Audio Microservices Python Application onto AWS EKS 
+## Video to Audio Microservices Python Application onto AWS EKS 
 Converting mp4 videos to mp3 in a microservices architecture.
 
 ## Technology Stack
@@ -33,11 +33,9 @@ This project leverages a variety of tools, platforms, and skills. Below is a com
   <img src="./images/ProjectArchitecture.png" width="600" title="Architecture" alt="Architecture">
   </p>
 
-## Deploying a Python-based Microservice Application on AWS EKS
-
 ### Introduction
 
-This document provides a step-by-step guide for deploying a Python-based microservice application on AWS Elastic Kubernetes Service (EKS). The application comprises four major microservices: `auth-server`, `converter-module`, `database-server` (PostgreSQL and MongoDB), and `notification-server`.
+This document provides a step-by-step guide for deploying a Python-based microservice application on AWS Elastic Kubernetes Service (EKS). The application comprises four major microservices: `auth-server`, `converter-module`, `gateway server` and `notification-server`.
 
 ### Prerequisites
 
