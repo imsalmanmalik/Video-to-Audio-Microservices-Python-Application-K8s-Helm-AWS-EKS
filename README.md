@@ -1,6 +1,32 @@
 # Video to Audio Microservices Python Application onto AWS EKS 
 Converting mp4 videos to mp3 in a microservices architecture.
 
+## Technology Stack
+This project leverages a variety of tools, platforms, and skills. Below is a comprehensive list:
+
+1) Programming Languages & Frameworks:
+* Python: Primary programming language used for microservices.
+* Flask: Web framework for building microservices in Python.
+
+2) Containerization & Orchestration:
+* Docker: Used for containerizing the microservices.
+* Kubernetes: Orchestration tool for managing containerized applications.
+* Helm: Package manager for Kubernetes, used for managing Kubernetes applications.
+
+3) Database & Messaging:
+* PostgreSQL: Relational database used for data storage.
+* MongoDB: NoSQL database used for flexible data storage.
+* RabbitMQ: Messaging broker for handling communication between services.
+  
+4) Cloud & Infrastructure:
+* AWS (Amazon Web Services): Cloud platform for hosting the application.
+* Amazon EKS (Elastic Kubernetes Service): Managed Kubernetes service on AWS.
+* AWS CloudWatch: Monitoring and observability service used for logging and metrics.
+  
+5) Security & Authentication:
+* JWT (JSON Web Tokens): Used for secure authentication in the application.
+* Secrets Management: Kubernetes secrets used for managing sensitive data.
+
 ## Architecture
 
 <p align="center">
@@ -49,7 +75,7 @@ Before you begin, ensure that the following prerequisites are met:
 3. **Create Node Role - AmazonEKSNodeRole**
    - Follow the steps mentioned in [this](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html#create-worker-node-role) documentation using root user
    - Please note that you do NOT need to configure any VPC CNI policy mentioned after step 5.e under Creating the Amazon EKS node IAM role
-   - Simply attach the following policies to your role once you have created `AmazonEKS_CNI_Policy` , `AmazonEBSCSIDriverPolicy` , `AmazonEC2ContainerRegistryReadOnly` , `CloudWatchAgentServerPolicy`(for observability and logging of pods/containers)
+   - Simply attach the following policies to your role once you have created `AmazonEKS_CNI_Policy` , `AmazonEBSCSIDriverPolicy` , `AmazonEC2ContainerRegistryReadOnly` , `CloudWatchAgentServerPolicy`(for observability & logging at cluster and application level)
    - Your AmazonEKSNodeRole will look like this: 
 
 <p align="center">
@@ -88,9 +114,9 @@ Before you begin, ensure that the following prerequisites are met:
   <img src="./images/inbound_rules_sg.png" width="600" title="Inbound_rules_sg" alt="Inbound_rules_sg">
   </p>
 
-#### Enable EBS CSI Addon
+#### Enable EBS CSI and CloudWatch Observability Addon
 1. enable addon `ebs csi` this is for enabling pvc's once cluster is created.
-2. enable Amazon CloudWatch Observability(to install the CloudWatch agent enable Container Insights within the cluster)
+2. enable `Amazon CloudWatch Observability`(For installing the CloudWatch agent to enable Container Insights within the cluster).
 
 <p align="center">
   <img src="./images/eks-add-ons.png" width="600" title="ebs_addon" alt="ebs_addon">
@@ -122,8 +148,9 @@ helm install mongo .
 Connect to the MongoDB instance using:
 
 ```
-mongosh mongodb://<username>:<pwd>@<nodeip>:30005/mp3s?authSource=admin
+mongosh 'mongodb://<username>:<pwd>@<nodeip>:30005/mp3s?authSource=admin'
 ```
+**Note**: `nodeip` can be obtained by navigating to EKS >Clusters >Your cluster >Compute >Node Groups >Node >InstanceId >PublicIpAddress(copy)
 
 ### PostgreSQL
 
@@ -150,7 +177,22 @@ helm install rabbitmq .
 
 Ensure you have created two queues in RabbitMQ named `mp3` and `video`. To create queues, visit `<nodeIp>:30004>` and use default username `guest` and password `guest`
 
+<p align="center">
+  <img src="./images/rabbitmq.png" width="600" title="ebs_addon" alt="ebs_addon">
+  </p>
+
 **NOTE:** Ensure that all the necessary ports are open in the node security group.
+
+### Building and Pushing Docker Images
+You can create your own Docker images from the Dockerfiles present for each microservice and push them to Docker Hub, or you can use my existing images. Below are the microservices available and the commands to build and push their Docker images:
+
+```
+# Build the Docker image
+docker build -t <your-docker-hub-username>/<microservice-name>:latest ./src/<microservice-name>
+
+# Push the image to Docker Hub
+docker push <your-docker-hub-username>/<microservice-name>:latest
+```
 
 ### Apply the manifest file for each microservice:
 
@@ -188,8 +230,6 @@ kubectl get all
 
 ### Notification Configuration
 
-
-
 For configuring email notifications and two-factor authentication (2FA), follow these steps:
 
 1. Go to your Gmail account and click on your profile.
@@ -206,7 +246,7 @@ For configuring email notifications and two-factor authentication (2FA), follow 
 
 7. Click on "Generate" and copy the generated password.
 
-8. Paste this generated password in `converter/manifest/secret.yaml` along with your email.
+8. Paste this generated password in `notification-service/manifest/secret.yaml` along with your email.
 
 Run the application through the following API calls:
 
@@ -216,11 +256,14 @@ Run the application through the following API calls:
   ```http request
   POST http://nodeIP:30002/login
   ```
-
+  
   ```console
   curl -X POST http://nodeIP:30002/login -u <email>:<password>
   ``` 
-  Expected output: success!
+  Expected output: JWT Token
+  
+Once the login API endpoint is called, a JWT token is produced. Users can decode this token using the online base64 decoder [here](https://www.base64decode.org/)
+
 
 - **Upload Endpoint**
   ```http request
@@ -231,7 +274,9 @@ Run the application through the following API calls:
    curl -X POST -F 'file=@./video.mp4' -H 'Authorization: Bearer <JWT Token>' http://nodeIP:30002/upload
   ``` 
   
-  Check if you received the ID on your email.
+  Check if you received the File ID(fid) on your email and copy the string for the next step.
+  
+  *Note*: The video upload is going to take some time since it is a long 5 min mp4 video which is a video recording of one of my projects 'MLOps-end-to-end-project'. This is the [link](https://github.com/imsalmanmalik/MLOps-end-to-end-project) to the MLOps project if anyone is interested. Feel free to replace it with a shorter video. 
 
 - **Download Endpoint**
   ```http request
@@ -240,6 +285,7 @@ Run the application through the following API calls:
   ```console
    curl --output video.mp3 -X GET -H 'Authorization: Bearer <JWT Token>' "http://nodeIP:30002/download?fid=<Generated fid>"
   ``` 
+**Note**: Replace with the `fid` recieved on your personal email along with the `JWT Token` recieved earlier after the Login Endpoint was called and the `nodeIP` of your EKS Node Group worker instance.
 
 ## Destroying the Infrastructure
 
