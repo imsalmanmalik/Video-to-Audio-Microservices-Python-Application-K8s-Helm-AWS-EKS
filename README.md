@@ -1,4 +1,4 @@
-## Video to Audio Microservices Python Application onto AWS EKS 
+x## Video to Audio Microservices Python Application onto AWS EKS 
 Converting mp4 videos to mp3 in a microservices architecture.
 
 ## Technology Stack
@@ -64,7 +64,7 @@ Before you begin, ensure that the following prerequisites are met:
    - Follow the steps mentioned in [this](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html) documentation using root user
    - After creating it will look like this:
 
-   <p align="center">
+ <p align="center">
   <img src="./images/ekscluster_role.png" width="600" title="ekscluster_role" alt="ekscluster_role">
   </p>
 
@@ -114,11 +114,17 @@ Before you begin, ensure that the following prerequisites are met:
 
 #### Enable EBS CSI and CloudWatch Observability Addon
 1. enable addon `ebs csi` this is for enabling pvc's once cluster is created.
-2. enable `Amazon CloudWatch Observability`(For installing the CloudWatch agent to enable Container Insights within the cluster).
+2. enable addon `Amazon CloudWatch Observability`(For installing the CloudWatch agent to enable Container Insights within the cluster).
 
 <p align="center">
   <img src="./images/eks-add-ons.png" width="600" title="ebs_addon" alt="ebs_addon">
   </p>
+
+<p align="center">
+  <img src="./images/CloudWatch_log_groups.png" width="600" title="ebs_addon" alt="ebs_addon">
+  </p>
+
+- This is how the CloudWatch log group would look like after the `Amazon CloudWatch Observability` add on is enabled. 
 
 #### Deploying your application on EKS Cluster
 
