@@ -22,6 +22,8 @@ This project leverages a variety of tools, platforms, and skills. Below is a com
 * AWS (Amazon Web Services): Cloud platform for hosting the application.
 * Amazon EKS (Elastic Kubernetes Service): Managed Kubernetes service on AWS.
 * AWS CloudWatch: Monitoring and observability service used for logging and metrics.
+* AWS EC2: Node Groups and worker instances.
+* AWS IAM: For cluster and node roles with necessary policies attached. 
   
 5) **Security & Authentication**:
 * JWT (JSON Web Tokens): Used for secure authentication in the application.
