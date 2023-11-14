@@ -4,26 +4,26 @@ Converting mp4 videos to mp3 in a microservices architecture.
 ## Technology Stack
 This project leverages a variety of tools, platforms, and skills. Below is a comprehensive list:
 
-1) Programming Languages & Frameworks:
+1) **Programming Languages & Frameworks**:
 * Python: Primary programming language used for microservices.
 * Flask: Web framework for building microservices in Python.
 
-2) Containerization & Orchestration:
+2) **Containerization & Orchestration**:
 * Docker: Used for containerizing the microservices.
 * Kubernetes: Orchestration tool for managing containerized applications.
 * Helm: Package manager for Kubernetes, used for managing Kubernetes applications.
 
-3) Database & Messaging:
+3) **Database & Messaging**:
 * PostgreSQL: Relational database used for data storage.
 * MongoDB: NoSQL database used for flexible data storage.
 * RabbitMQ: Messaging broker for handling communication between services.
   
-4) Cloud & Infrastructure:
+4) **Cloud & Infrastructure**:
 * AWS (Amazon Web Services): Cloud platform for hosting the application.
 * Amazon EKS (Elastic Kubernetes Service): Managed Kubernetes service on AWS.
 * AWS CloudWatch: Monitoring and observability service used for logging and metrics.
   
-5) Security & Authentication:
+5) **Security & Authentication**:
 * JWT (JSON Web Tokens): Used for secure authentication in the application.
 * Secrets Management: Kubernetes secrets used for managing sensitive data.
 
@@ -152,7 +152,7 @@ mongosh 'mongodb://<username>:<pwd>@<nodeip>:30005/mp3s?authSource=admin'
 
 ### PostgreSQL
 
-Set the database username and password in `values.yaml`. Install PostgreSQL from the PostgreSQL Helm chart folder and initialize it with the queries in `init.sql`. For PowerShell users:
+Set the database username and password in `values.yaml`. Install PostgreSQL from the PostgreSQL Helm chart folder and initialize it with the queries in `init.sql`.
 
 ```
 cd ..
