@@ -1,10 +1,10 @@
-# Devops Project: video-converter
+# Video to Audio Microservices Python Application onto AWS EKS 
 Converting mp4 videos to mp3 in a microservices architecture.
 
 ## Architecture
 
 <p align="center">
-  <img src="./Project documentation/ProjectArchitecture.png" width="600" title="Architecture" alt="Architecture">
+  <img src="./images/ProjectArchitecture.png" width="600" title="Architecture" alt="Architecture">
   </p>
 
 ## Deploying a Python-based Microservice Application on AWS EKS
@@ -29,31 +29,7 @@ Before you begin, ensure that the following prerequisites are met:
 
 6. **Databases:** Set up PostgreSQL and MongoDB for your application.
 
-### High Level Flow of Application Deployment
-
-Follow these steps to deploy your microservice application:
-
-1. **MongoDB and PostgreSQL Setup:** Create databases and enable automatic connections to them.
-
-2. **RabbitMQ Deployment:** Deploy RabbitMQ for message queuing, which is required for the `converter-module`.
-
-3. **Create Queues in RabbitMQ:** Before deploying the `converter-module`, create two queues in RabbitMQ: `mp3` and `video`.
-
-4. **Deploy Microservices:**
-   - **auth-server:** Navigate to the `auth-server` manifest folder and apply the configuration.
-   - **gateway-server:** Deploy the `gateway-server`.
-   - **converter-module:** Deploy the `converter-module`. Make sure to provide your email and password in `converter/manifest/secret.yaml`.
-   - **notification-server:** Configure email for notifications and two-factor authentication (2FA).
-
-5. **Application Validation:** Verify the status of all components by running:
-   ```bash
-   kubectl get all
-   ```
-
-6. **Destroying the Infrastructure** 
-
-
-### Low Level Steps
+### Steps to follow
 
 #### Cluster Creation
 
@@ -65,7 +41,7 @@ Follow these steps to deploy your microservice application:
    - After creating it will look like this:
 
    <p align="center">
-  <img src="./Project documentation/ekscluster_role.png" width="600" title="ekscluster_role" alt="ekscluster_role">
+  <img src="./images/ekscluster_role.png" width="600" title="ekscluster_role" alt="ekscluster_role">
   </p>
 
    - Please attach `AmazonEKS_CNI_Policy` explicitly if it is not attached by default
@@ -73,12 +49,11 @@ Follow these steps to deploy your microservice application:
 3. **Create Node Role - AmazonEKSNodeRole**
    - Follow the steps mentioned in [this](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html#create-worker-node-role) documentation using root user
    - Please note that you do NOT need to configure any VPC CNI policy mentioned after step 5.e under Creating the Amazon EKS node IAM role
-   - Simply attach the following policies to your role once you have created `AmazonEKS_CNI_Policy` , `AmazonEBSCSIDriverPolicy` , `AmazonEC2ContainerRegistryReadOnly`
-     incase it is not attached by default
+   - Simply attach the following policies to your role once you have created `AmazonEKS_CNI_Policy` , `AmazonEBSCSIDriverPolicy` , `AmazonEC2ContainerRegistryReadOnly` , `CloudWatchAgentServerPolicy`(for observability and logging of pods/containers)
    - Your AmazonEKSNodeRole will look like this: 
 
 <p align="center">
-  <img src="./Project documentation/node_iam.png" width="600" title="Node_IAM" alt="Node_IAM">
+  <img src="./images/eksnode_role_policies.png" width="600" title="Node_IAM" alt="Node_IAM">
   </p>
 
 4. **Open EKS Dashboard:**
@@ -101,7 +76,7 @@ Follow these steps to deploy your microservice application:
 
 1. In the "Compute" section, click on "Add node group."
 
-2. Choose the AMI (default), instance type (e.g., t3.medium), and the number of nodes (attach a screenshot here).
+2. Choose the AMI (default), instance type (e.g., t3a.xlarge), and the number of nodes(1 node is sufficient for testing out this project).
 
 3. Click "Create node group."
 
@@ -110,14 +85,15 @@ Follow these steps to deploy your microservice application:
 **NOTE:** Ensure that all the necessary ports are open in the node security group.
 
 <p align="center">
-  <img src="./Project documentation/inbound_rules_sg.png" width="600" title="Inbound_rules_sg" alt="Inbound_rules_sg">
+  <img src="./images/inbound_rules_sg.png" width="600" title="Inbound_rules_sg" alt="Inbound_rules_sg">
   </p>
 
 #### Enable EBS CSI Addon
-1. enable addon `ebs csi` this is for enabling pvcs once cluster is created
+1. enable addon `ebs csi` this is for enabling pvc's once cluster is created.
+2. enable Amazon CloudWatch Observability(to install the CloudWatch agent enable Container Insights within the cluster)
 
 <p align="center">
-  <img src="./Project documentation/ebs_addon.png" width="600" title="ebs_addon" alt="ebs_addon">
+  <img src="./images/eks-add-ons.png" width="600" title="ebs_addon" alt="ebs_addon">
   </p>
 
 #### Deploying your application on EKS Cluster
