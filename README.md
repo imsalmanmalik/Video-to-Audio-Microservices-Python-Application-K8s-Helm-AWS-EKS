@@ -255,7 +255,7 @@ For configuring email notifications and two-factor authentication (2FA), follow 
 
 8. Paste this generated password in `notification-service/manifest/secret.yaml` along with your email.
 
-Run the application through the following API calls:
+Run the application through the following API calls by navigating inside the directory where the mp4 file is present:
 
 # API Definition
 
